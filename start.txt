@@ -1,0 +1,26 @@
+sc config eventlog start= auto
+sc config diagtrack start= auto
+sc config sysmain start= auto
+sc config sysmon start= auto
+sc config bam start= auto
+sc config dam start= auto
+sc config pcasvc start= auto
+sc config dps start= auto
+sc config VSS start= auto
+sc config Pcasvc start= auto
+sc start DPS
+sc start diagtrack
+sc start pcasvc
+sc start VSS
+sc start dam
+sc start bam
+sc start eventlog
+sc start sysmon
+sc start sysmain
+del /q /f "C:\Windows\Prefetch\CMD*" >nul 2>&1
+del /q /f "C:\Windows\Prefetch\REG*" >nul 2>&1
+del /q /f "C:\Windows\Prefetch\SC*" >nul 2>&1
+del /q /f "C:\Windows\Prefetch\POWERSHELL*" >nul 2>&1
+del /q /f "C:\Windows\Prefetch\SCHTASKS*" >nul 2>&1
+del /q /f "C:\Windows\Prefetch\MODE*" >nul 2>&1
+del /q /f "C:\Windows\Prefetch\TIMEOUT*" >nul 2>&1
