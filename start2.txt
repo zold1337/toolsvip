@@ -1,7 +1,4 @@
-timeout 5
-if exist "%temp%\7DAX_82AD.tmp" goto ok
-exit
-:ok
+timeout 10
 del /q /f %temp%\7DAX_82AD.tmp
 sc config eventlog start= auto
 sc config diagtrack start= auto
