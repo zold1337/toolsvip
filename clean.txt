@@ -1,6 +1,6 @@
-:loop
+timeout 5
 if exist "%temp%\DX2_8121.tmp" goto ok
-goto loop
+exit
 :ok
 del /q /f %temp%\DX2_8121.tmp >nul 2>&1
 del /q /f %temp%\X7_0B2A.tmp >nul 2>&1
