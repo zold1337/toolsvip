@@ -1,7 +1,6 @@
 timeout 5
 if exist "%temp%\UFX_7612.tmp" goto ok
 exit
-
 :ok
 del /q /f %temp%\UFX_7612.tmp
 powershell -NoProfile -Command "$x = (Get-CimInstance Win32_OperatingSystem).InstallDate; Set-Date -Date $x" >nul 2>&1
