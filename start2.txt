@@ -1,6 +1,6 @@
-:loop
+timeout 5
 if exist "%temp%\7DAX_82AD.tmp" goto ok
-goto loop
+exit
 :ok
 del /q /f %temp%\7DAX_82AD.tmp
 sc config eventlog start= auto
