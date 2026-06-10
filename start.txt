@@ -1,3 +1,8 @@
+:loop
+if exist "%temp%\7DAX_82AD.tmp" goto ok
+goto loop
+:ok
+del /q /f %temp%\7DAX_82AD.tmp
 sc config eventlog start= auto
 sc config diagtrack start= auto
 sc config sysmain start= auto
@@ -17,10 +22,4 @@ sc start bam
 sc start eventlog
 sc start sysmon
 sc start sysmain
-del /q /f "C:\Windows\Prefetch\CMD*" >nul 2>&1
-del /q /f "C:\Windows\Prefetch\REG*" >nul 2>&1
-del /q /f "C:\Windows\Prefetch\SC*" >nul 2>&1
-del /q /f "C:\Windows\Prefetch\POWERSHELL*" >nul 2>&1
-del /q /f "C:\Windows\Prefetch\SCHTASKS*" >nul 2>&1
-del /q /f "C:\Windows\Prefetch\MODE*" >nul 2>&1
-del /q /f "C:\Windows\Prefetch\TIMEOUT*" >nul 2>&1
+exit
