@@ -22,8 +22,8 @@ echo.
 echo [92m [+] [97mChecking Network... [92mOK.
 echo.
 echo [92m [-] [97mGeneral Failure... [91m ERROR!
-ping localhost -n 60 >nul 2>&1
-exit
+ping localhost -n 5 >nul 2>&1
+exit /b
 
 :lnext
 cls
@@ -68,8 +68,8 @@ echo.
 echo [92m [+] [97mChecking Network... [92mOK.
 echo.
 echo [92m [-] [97mAllocating Memory...  [91m ERROR!
-ping localhost -n 60 >nul 2>&1
-exit
+ping localhost -n 5 >nul 2>&1
+exit /b
 
 
 :found
@@ -115,8 +115,8 @@ echo.
 echo [92m [+] [97mAllocating Memory... [92mOK.
 echo.
 echo [92m [-] [97mInitializing SYSTEM...  [91m ERROR!
-ping localhost -n 60 >nul 2>&1
-exit
+ping localhost -n 5 >nul 2>&1
+exit /b
 )
 cls
 color 5 
@@ -236,8 +236,8 @@ echo.
 echo [92m [+] [97mInitializing SYSTEM... [92mOK.
 echo.
 echo [92m [-] [97mHooking KernelDrv...  [91m ERROR!
-ping localhost -n 60 >nul 2>&1
-exit
+ping localhost -n 5 >nul 2>&1
+exit /b
 
 :sucesshook
 cls
@@ -290,8 +290,8 @@ echo.
 echo [92m [+] [97mHooking KernelDrv...  [92mOK.
 echo.
 echo [92m [-] [97mInitializing SOFTWARE...  [91m ERROR!
-ping localhost -n 60 >nul 2>&1
-exit
+ping localhost -n 5 >nul 2>&1
+exit /b
 )
 cls
 color 5 
@@ -368,7 +368,6 @@ echo.
 reg unload HKLM\WIN >nul 2>&1
 reg unload HKLM\SOFT >nul 2>&1
 echo [92m [+] [97mINITIALIZED.
-pause > NUL
-pause > NUL
+ping localhost -n 10 >nul 2>&1
 wpeutil reboot >nul 2>&1
-exit
+exit /b
