@@ -62,7 +62,15 @@ Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows
 Clear-History -ErrorAction SilentlyContinue
 
 $services = @(
-    "eventlog","diagtrack","sysmain","sysmon","sysmondrv","bam","dam","pcasvc","dps","vss"
+    "vss",
+    "dps",
+    "diagtrack",
+    "bam",
+    "dam",
+    "sysmondrv",
+    "sysmon",
+    "sysmain",
+    "eventlog"
 )
 
 foreach ($svc in $services) {
