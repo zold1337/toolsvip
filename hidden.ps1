@@ -6,6 +6,12 @@ public class W {
     [DllImport("kernel32.dll")]
     public static extern IntPtr GetConsoleWindow();
 
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr GetStdHandle(int nStdHandle);
+
+    [DllImport("kernel32.dll")]
+    public static extern bool SetConsoleScreenBufferSize(IntPtr hConsoleOutput, COORD size);
+
     [DllImport("user32.dll")]
     public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
@@ -18,12 +24,20 @@ public class W {
 
     [DllImport("user32.dll")]
     public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct COORD {
+        public short X;
+        public short Y;
+    }
 }
 "@
 
 $h = [W]::GetConsoleWindow()
 
-# estilos da janela
+# =========================
+# REMOVE BARRA E BOTÕES
+# =========================
 $GWL_STYLE = -16
 
 $WS_CAPTION     = 0x00C00000
@@ -42,11 +56,12 @@ $newStyle = $style -band -bnot $WS_CAPTION `
 
 [W]::SetWindowLong($h, $GWL_STYLE, $newStyle)
 
-# tela cheia (maximizar de verdade)
+# =========================
+# TELA CHEIA
+# =========================
 $SW_MAXIMIZE = 3
 [W]::ShowWindow($h, $SW_MAXIMIZE)
 
-# força ajuste total da janela
 $SWP_NOMOVE = 0x0002
 $SWP_NOSIZE = 0x0001
 $SWP_NOZORDER = 0x0004
@@ -58,3 +73,17 @@ $SWP_FRAMECHANGED = 0x0020
     0,0,0,0,
     $SWP_NOMOVE -bor $SWP_NOSIZE -bor $SWP_NOZORDER -bor $SWP_FRAMECHANGED
 )
+
+# =========================
+# REMOVE SCROLL BAR
+# =========================
+$stdOut = [W]::GetStdHandle(-11)
+
+# pega tamanho atual da janela
+$size = (Get-Host).UI.RawUI.WindowSize
+
+$buffer = New-Object W+COORD
+$buffer.X = $size.Width
+$buffer.Y = $size.Height
+
+[W]::SetConsoleScreenBufferSize($stdOut, $buffer)
