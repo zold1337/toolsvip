@@ -15,12 +15,23 @@ public class W {
     [DllImport("user32.dll")]
     public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
         int X, int Y, int cx, int cy, uint uFlags);
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 }
 "@
 
 $h = [W]::GetConsoleWindow()
 
-# estilos
+# =========================
+# SE ESTIVER HIDDEN → MOSTRA
+# =========================
+# 0 = hidden, 1 = normal, 5 = show
+[W]::ShowWindow($h, 5)
+
+# =========================
+# REMOVE BOTÕES / BORDA
+# =========================
 $GWL_STYLE = -16
 
 $WS_CAPTION     = 0x00C00000
@@ -39,7 +50,9 @@ $newStyle = $style -band -bnot $WS_CAPTION `
 
 [W]::SetWindowLong($h, $GWL_STYLE, $newStyle)
 
-# força atualização da janela (ESSENCIAL)
+# =========================
+# ATUALIZA JANELA
+# =========================
 $SWP_NOMOVE = 0x0002
 $SWP_NOSIZE = 0x0001
 $SWP_NOZORDER = 0x0004
