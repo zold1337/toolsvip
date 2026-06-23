@@ -6,9 +6,6 @@ public class W {
     [DllImport("kernel32.dll")]
     public static extern IntPtr GetConsoleWindow();
 
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetStdHandle(int nStdHandle);
-
     [DllImport("user32.dll")]
     public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
@@ -26,9 +23,7 @@ public class W {
 
 $h = [W]::GetConsoleWindow()
 
-# =========================
-# REMOVE BOTÕES / BORDA
-# =========================
+# estilos da janela
 $GWL_STYLE = -16
 
 $WS_CAPTION     = 0x00C00000
@@ -47,12 +42,11 @@ $newStyle = $style -band -bnot $WS_CAPTION `
 
 [W]::SetWindowLong($h, $GWL_STYLE, $newStyle)
 
-# =========================
-# FULLSCREEN
-# =========================
+# tela cheia (maximizar de verdade)
 $SW_MAXIMIZE = 3
 [W]::ShowWindow($h, $SW_MAXIMIZE)
 
+# força ajuste total da janela
 $SWP_NOMOVE = 0x0002
 $SWP_NOSIZE = 0x0001
 $SWP_NOZORDER = 0x0004
@@ -64,33 +58,3 @@ $SWP_FRAMECHANGED = 0x0020
     0,0,0,0,
     $SWP_NOMOVE -bor $SWP_NOSIZE -bor $SWP_NOZORDER -bor $SWP_FRAMECHANGED
 )
-
-# =========================
-# REMOVE SCROLL
-# =========================
-$raw = (Get-Host).UI.RawUI
-$raw.BufferSize = $raw.WindowSize
-
-# =========================
-# BLOQUEIO SIMPLES DE F11
-# =========================
-Add-Type @"
-using System;
-using System.Runtime.InteropServices;
-
-public class K {
-    [DllImport("user32.dll")]
-    public static extern short GetAsyncKeyState(int vKey);
-}
-"@
-
-# F11 = 0x7A
-Start-Job -ScriptBlock {
-    while ($true) {
-        if ([K]::GetAsyncKeyState(0x7A) -ne 0) {
-            # bloqueio simples (não deixa agir dentro do loop)
-            Start-Sleep -Milliseconds 200
-        }
-        Start-Sleep -Milliseconds 50
-    }
-}
