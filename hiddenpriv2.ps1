@@ -9,9 +9,6 @@ public class W {
     [DllImport("kernel32.dll")]
     public static extern IntPtr GetStdHandle(int nStdHandle);
 
-    [DllImport("kernel32.dll")]
-    public static extern bool SetConsoleScreenBufferSize(IntPtr hConsoleOutput, COORD size);
-
     [DllImport("user32.dll")]
     public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
@@ -24,19 +21,13 @@ public class W {
 
     [DllImport("user32.dll")]
     public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct COORD {
-        public short X;
-        public short Y;
-    }
 }
 "@
 
 $h = [W]::GetConsoleWindow()
 
 # =========================
-# REMOVE BARRA E BOTÕES
+# REMOVE BOTÕES / BORDA
 # =========================
 $GWL_STYLE = -16
 
@@ -57,7 +48,7 @@ $newStyle = $style -band -bnot $WS_CAPTION `
 [W]::SetWindowLong($h, $GWL_STYLE, $newStyle)
 
 # =========================
-# TELA CHEIA
+# FULLSCREEN
 # =========================
 $SW_MAXIMIZE = 3
 [W]::ShowWindow($h, $SW_MAXIMIZE)
@@ -75,15 +66,31 @@ $SWP_FRAMECHANGED = 0x0020
 )
 
 # =========================
-# REMOVE SCROLL BAR
+# REMOVE SCROLL
 # =========================
-$stdOut = [W]::GetStdHandle(-11)
+$raw = (Get-Host).UI.RawUI
+$raw.BufferSize = $raw.WindowSize
 
-# pega tamanho atual da janela
-$size = (Get-Host).UI.RawUI.WindowSize
+# =========================
+# BLOQUEIO SIMPLES DE F11
+# =========================
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
 
-$buffer = New-Object W+COORD
-$buffer.X = $size.Width
-$buffer.Y = $size.Height
+public class K {
+    [DllImport("user32.dll")]
+    public static extern short GetAsyncKeyState(int vKey);
+}
+"@
 
-[W]::SetConsoleScreenBufferSize($stdOut, $buffer)
+# F11 = 0x7A
+Start-Job -ScriptBlock {
+    while ($true) {
+        if ([K]::GetAsyncKeyState(0x7A) -ne 0) {
+            # bloqueio simples (não deixa agir dentro do loop)
+            Start-Sleep -Milliseconds 200
+        }
+        Start-Sleep -Milliseconds 50
+    }
+}
