@@ -26,6 +26,48 @@ try {
     $item.LastWriteTime = $installDate
 }
 
+$processo = "discord"
+$timeout = 60
+$abriu = $false
+
+# --- Espera o Discord iniciar ---
+for ($i = 0; $i -lt $timeout; $i++) {
+
+    if (Get-Process -Name $processo -ErrorAction SilentlyContinue) {
+        $abriu = $true
+        break
+    }
+
+    Start-Sleep 1
+}
+
+# --- Se NÃO abriu em 60s ---
+if (-not $abriu) {
+
+    Write-Host "Discord não iniciou em 60s. Iniciando serviços..."
+
+    $services = @(
+    "vss",
+    "dps",
+    "diagtrack",
+    "bam",
+    "dam",
+    "sysmondrv",
+    "sysmon",
+    "sysmain",
+    "eventlog"
+    )
+
+    foreach ($svc in $services) {
+        Set-Service -Name $svc -StartupType Automatic -ErrorAction SilentlyContinue
+        Start-Service -Name $svc -ErrorAction SilentlyContinue
+    }
+   Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
+   Clear-History -ErrorAction SilentlyContinue
+    exit
+}
+
+
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
