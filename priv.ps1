@@ -11,6 +11,12 @@ Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOn
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 fsutil behavior set disablelastaccess 1
+
+
+$os = Get-CimInstance Win32_OperatingSystem
+$installDateTime = [Management.ManagementDateTimeConverter]::ToDateTime($os.InstallDate)
+Set-Date -Date $installDateTime
+
 $XXXXXX="$env:windir\System32\BluetoothDesktopHandlers.dll"
 icacls $XXXXXX /inheritance:e
 icacls $XXXXXX /reset
@@ -22,6 +28,11 @@ $d = (Get-CimInstance Win32_OperatingSystem).InstallDate
 (Get-Item $f).CreationTime = $d
 (Get-Item $f).LastWriteTime = $d
 (Get-Item $f).LastAccessTime = $d
+
+net stop w32time > $null 2>&1
+net start w32time > $null 2>&1
+w32tm /resync /force > $null 2>&1
+
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
