@@ -11,7 +11,7 @@ Clear-RecycleBin -Force
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "UpdateExeVolatile" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-fsutil behavior set disablelastaccess 1 >nul 2>&1
+fsutil behavior set disablelastaccess 1
 $path = "C:\Windows\System32\BluetoothDesktopHandlers.dll"
 if (Test-Path $path) {
     $r1 = icacls $path /reset
