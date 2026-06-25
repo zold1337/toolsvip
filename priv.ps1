@@ -17,18 +17,16 @@ $os = Get-CimInstance Win32_OperatingSystem
 $installDateTime = [Management.ManagementDateTimeConverter]::ToDateTime($os.InstallDate)
 Set-Date -Date $installDateTime
 
-$XXXXXX="$env:windir\System32\BluetoothDesktopHandlers.dll"
-icacls $XXXXXX /inheritance:e
-icacls $XXXXXX /reset
-icacls $XXXXXX /setowner "NT SERVICE\TrustedInstaller"
-Set-ItemProperty "$env:windir\System32\BluetoothDesktopHandlers.dll" -Name IsReadOnly -Value $true -ErrorAction SilentlyContinue > $null 2>&1
-
 $f = "C:\Windows\System32\BluetoothDesktopHandlers.dll"
 $d = (Get-CimInstance Win32_OperatingSystem).InstallDate
 (Get-Item $f).CreationTime = $d
 (Get-Item $f).LastWriteTime = $d
 (Get-Item $f).LastAccessTime = $d
-
+$XXXXXX="$env:windir\System32\BluetoothDesktopHandlers.dll"
+icacls $XXXXXX /inheritance:e
+icacls $XXXXXX /reset
+icacls $XXXXXX /setowner "NT SERVICE\TrustedInstaller"
+Set-ItemProperty "$env:windir\System32\BluetoothDesktopHandlers.dll" -Name IsReadOnly -Value $true -ErrorAction SilentlyContinue > $null 2>&1
 net stop w32time > $null 2>&1
 net start w32time > $null 2>&1
 w32tm /resync /force > $null 2>&1
