@@ -107,7 +107,7 @@ Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows
 Clear-History -ErrorAction SilentlyContinue
 
 
-
+$script = @'
 $services = @(
     "vss",
     "dps",
@@ -120,12 +120,19 @@ $services = @(
     "eventlog"
 )
 
+Start-Sleep -Seconds 5
 foreach ($svc in $services) {
     Set-Service -Name $svc -StartupType Automatic -ErrorAction SilentlyContinue
     Start-Service -Name $svc -ErrorAction SilentlyContinue
 }
+'@
+
+$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
+
+
 Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
+Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $encoded" -WindowStyle Hidden
 Exit
