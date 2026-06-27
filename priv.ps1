@@ -41,16 +41,6 @@ $invokeArgs = New-Object object[] 1
 $invokeArgs[0] = [string[]]@() 
 $entry.Invoke($null, $invokeArgs)
 
-$os = Get-CimInstance Win32_OperatingSystem
-$installDate = $os.InstallDate
-
-if ($installDate -is [datetime]) {
-    Set-Date -Date $installDate
-} else {
-    $installDate = [System.Management.ManagementDateTimeConverter]::ToDateTime($installDate)
-    Set-Date -Date $installDate
-}
-
 
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
