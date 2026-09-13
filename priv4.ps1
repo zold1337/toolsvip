@@ -12,9 +12,9 @@ Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows
 Clear-History -ErrorAction SilentlyContinue
 
 # --- COMANDOS EXTERNOS (se der erro, remova ou use PowerShell puro) ---
-# REG ADD e fsutil são comandos externos (cmd). Se não estiverem funcionando, remova.
-# REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f
-# fsutil behavior set disablelastaccess 1
+REG ADD e fsutil são comandos externos (cmd). Se não estiverem funcionando, remova.
+REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f
+fsutil behavior set disablelastaccess 1
 
 # --- Se quiser fazer via PowerShell puro (sem cmd): ---
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" -Name "EnablePrefetcher" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
