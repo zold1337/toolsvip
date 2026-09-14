@@ -22,27 +22,6 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\M
 # fsutil não tem equivalente PowerShell direto, mas você pode usar:
 # (não recomendado mexer nisso, pode causar lentidão)
 
-$timeout = (Get-Date).AddSeconds(60)
-
-while ((Get-Date) -lt $timeout) {
-    if (Get-Process Discord -ErrorAction SilentlyContinue) {
-        break
-    }
-    Start-Sleep -Seconds 1
-}
-
-if (-not (Get-Process Discord -ErrorAction SilentlyContinue)) {
-    $discordPath = "$env:LOCALAPPDATA\Discord\Update.exe"
-    if (Test-Path $discordPath) {
-        Start-Process $discordPath -ArgumentList "--processStart Discord.exe"
-    }
-    else {
-        Add-Type -AssemblyName System.Windows.Forms
-        [System.Windows.Forms.MessageBox]::Show("Not Found","Error",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Error)
-        Exit
-    }
-}
-
 # --- CORREÇÃO 2: Invoke com array correto ---
 $invokeArgs = New-Object object[] 1 
 $invokeArgs[0] = [string[]]@() 
