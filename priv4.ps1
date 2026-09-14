@@ -11,16 +11,6 @@ Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOn
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
 
-# --- COMANDOS EXTERNOS (se der erro, remova ou use PowerShell puro) ---
-REG ADD e fsutil são comandos externos (cmd). Se não estiverem funcionando, remova.
-REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f
-fsutil behavior set disablelastaccess 1
-
-# --- Se quiser fazer via PowerShell puro (sem cmd): ---
-Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" -Name "EnablePrefetcher" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-
-# fsutil não tem equivalente PowerShell direto, mas você pode usar:
-# (não recomendado mexer nisso, pode causar lentidão)
 
 # --- CORREÇÃO 2: Invoke com array correto ---
 $invokeArgs = New-Object object[] 1 
@@ -28,6 +18,8 @@ $invokeArgs[0] = [string[]]@()
 $entry.Invoke($null, [object[]]@())
 
 # --- LIMPEZA (sem erros) ---
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" -Name "EnablePrefetcher" -Value 3 -Type DWord -Force
+fsutil behavior set disablelastaccess 0
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\CBS\*.log"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\CrashDumps\*.dmp"
 Remove-Item -Force -Recurse -ErrorAction SilentlyContinue "C:\Windows\Logs\MoSetup\*.log"
@@ -78,3 +70,54 @@ Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows
 Clear-History -ErrorAction SilentlyContinue
 Remove-Item -Force -ErrorAction SilentlyContinue "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
 Clear-History -ErrorAction SilentlyContinue
+
+$services = @(
+    "SysMain",
+    "Sysmon",
+    "SysmonDrv",
+    "PcaSvc",
+    "DiagTrack",
+    "bam",
+    "dam",
+    "VSS",
+    "EventLog",
+    "DPS"
+)
+
+$services = @(
+    "SysMain",
+    "Sysmon",
+    "SysmonDrv",
+    "PcaSvc",
+    "DiagTrack",
+    "bam",
+    "dam",
+    "VSS",
+    "EventLog",
+    "DPS"
+)
+
+foreach ($svc in $services) {
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\$svc"
+
+    # 1. Coloca como Automatic no registro
+    if (Test-Path $regPath) {
+        Set-ItemProperty -Path $regPath -Name "Start" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "[REG] $svc → Automatic" -ForegroundColor Cyan
+    }
+
+    # 2. Tenta iniciar o serviço agora
+    try {
+        $service = Get-Service -Name $svc -ErrorAction Stop
+        if ($service.Status -ne "Running") {
+            Start-Service -Name $svc -ErrorAction Stop
+            Write-Host "[START] $svc → Iniciado" -ForegroundColor Green
+        }
+        else {
+            Write-Host "[OK] $svc já estava rodando" -ForegroundColor DarkGreen
+        }
+    }
+    catch {
+        Write-Host "[-] $svc não pôde ser iniciado (pode não existir neste sistema)" -ForegroundColor Yellow
+    }
+}
